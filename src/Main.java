@@ -1,8 +1,10 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Esta clase ...
+ * Esta clase proporciona un programa base para la gestión de ficheros y directorios
+ * utilizando la clase java.io.File.
  *
  * @Autor: Javier Raposo Huelva
  * @Version: 2025:10
@@ -52,10 +54,10 @@ public class Main {
                     eliminarDirectorio(file);
                     break;
                 case 3:
-                    crearFichero();
+                    crearFichero(file);
                     break;
                 case 4:
-                    //eliminarFichero();
+                    eliminarFichero(file);
                     break;
                 case 5:
                     System.out.println("Saliendo del programa. ¡Hasta luego!");
@@ -121,9 +123,45 @@ public class Main {
      * - Pedir ruta completa del fichero.
      * - Verificar si existe.
      * - Crear con createNewFile controlando posibles excepciones.
-     * - Si el directorio padre no existe, decidir si crearlo.
+     * - Si el directorio padre no existe, decidir si crearlo. si o no.
      */
-    public static void crearFichero() {
+    public static void crearFichero(File file) {
+        Scanner sc = new Scanner(System.in);
+        String opc;
+
+        try{
+            if (!file.exists()) {
+                File parentDir = file.getParentFile();
+                if (parentDir != null && !parentDir.exists()) {
+                    System.out.println("El directorio padre no existe. ¿Desea crearlo? (s/n): ");
+                    opc = sc.nextLine();
+                    if (!opc.equalsIgnoreCase("s")) {
+                        System.out.println("No se creó el fichero.");
+                        return;
+                    } else {
+                        System.out.println("Creando directorio padre...");
+                        if (parentDir.mkdirs()) {
+                            System.out.println("Directorio padre creado con éxito.");
+                        } else {
+                            System.out.println("No se pudo crear el directorio padre.");
+                            return;
+                        }
+                    }
+                }
+                if (file.createNewFile()) {
+                    System.out.println("Fichero creado con éxito.");
+                } else {
+                    System.out.println("No se pudo crear el fichero.");
+                }
+            } else {
+                System.out.println("El fichero ya existe.");
+
+            }
+        } catch (IOException e) {
+            System.out.println("Error al crear el fichero: " + e.getMessage());
+        }
+
+
 
     }
 
@@ -135,9 +173,18 @@ public class Main {
      * - Confirmar con el usuario antes de borrar.
      * - Eliminar con delete y mostrar resultado.
      */
-    public static void eliminarFichero() {
+    public static void eliminarFichero(File file) {
         // TODO: Implementar según los puntos anteriores usando únicamente File.
 
+        if (!file.exists() ) {
+            System.out.println("El fichero no existe.");
 
+        } else {
+            if (file.delete()) {
+                System.out.println("El fichero " + file.getName() + " ha sido eliminado con éxito.");
+            } else {
+                System.out.println("No se pudo eliminar el fichero.");
+            }
+        }
     }
 }
